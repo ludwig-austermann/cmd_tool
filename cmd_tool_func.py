@@ -41,10 +41,10 @@ def help():
     scp         opens scp with custom account
     -judge_up   uploads a file to judge-Folder of CoMa-Account
     ssh         initiates connection with custom account
+    password    generates key and copys key to server
     *lp         prints a document
     *update     installs or updates cmd_tool on ssh server
-    new        sets preferences / usersettings
-    *curses     initiates curses gui if available
+    settings    sets preferences / usersettings
     exit        finish program
     
     tipp        CTRL+C stops the execution'''
@@ -54,14 +54,16 @@ def help():
         input_func("continue")
 
 def ssh():
-    '''input the username and host'''
+    '''input the username and host
+    manually: ssh <user>@<host> <command>'''
     user = choose("username", user_data["user"])
     host = choose("hostname", user_data["host"])
     command = choose("command", user_data["command"])
     wrapper(os.system)("ssh {}@{} {}".format(user, host, command)) # &
 
 def scp():
-    '''input the username and host'''
+    '''input the username and host
+    manually: scp <file_dir>/<file> <user>@<host>:<host_dir>/<file>'''
     user = choose("username", user_data["user"])
     host = choose("hostname", user_data["host"])
     file_dir = choose("file direction", user_data["dir"])
@@ -77,12 +79,23 @@ def lp():
     wrapper(os.system)("lp -d {} {}".format(printer, file_name))
 
 def judge_up():
-    '''input the name of file and number, used for CoMa on TU-Berlin, needs a judge folder on Desktop.'''
+    '''input the name of file and number, used for CoMa on TU-Berlin, needs a judge folder on Desktop.
+    manually: scp <file>.py <user>@<host>:Desktop/judge/<number>.py'''
     name = input_func("name of File: ")
     number = input_func("number of PA: ")
-    user = choice("username", user_data["user"])
-    host = choice("host", user_data["host"])
+    user = choose("username", user_data["user"])
+    host = choose("hostname", user_data["host"])
     wrapper(os.system)("scp {}.py {}@{}:Desktop/judge/{}.py".format(name, user, host, number))
+
+def password():
+    '''generates key and copys it to server
+    manually: ssh-keygen
+    and: ssh-copy-id <user>@<host>'''
+    if choose("generate key?", ["yes", "no"]) == "yes":
+        wrapper(os.system)("ssh-keygen")
+    user = choose("username", user_data["user"])
+    host = choose("hostname", user_data["host"])
+    wrapper(os.system)("ssh-copy-id {}@{}".format(user, host))
 
 def update():
     '''installs or updates cmd_tool on an ssh server of your choice, so that you can continue running this tool there.'''
@@ -114,7 +127,7 @@ def settings():
         json.dump(user_data, f)
     output = None
 
-dic = {"help": help, "ssh": ssh, "judge_up": judge_up, "exit": exit, "scp": scp, "settings": settings}
+dic = {"help": help, "ssh": ssh, "judge_up": judge_up, "exit": exit, "scp": scp, "settings": settings, "password": password}
 
 def search(inp):
     if inp in dic:
