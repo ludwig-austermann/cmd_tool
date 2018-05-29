@@ -77,10 +77,12 @@ def lp():
     wrapper(os.system)("lp -d {} {}".format(printer, file_name))
 
 def judge_up():
-    '''input the name of file and number'''
+    '''input the name of file and number, used for CoMa on TU-Berlin, needs a judge folder on Desktop.'''
     name = input_func("name of File: ")
     number = input_func("number of PA: ")
-    wrapper(os.system)("scp {}.py co2-107@pool.math.tu-berlin.de:Desktop/judge/{}.py".format(name, number))
+    user = choice("username", user_data["user"])
+    host = choice("host", user_data["host"])
+    wrapper(os.system)("scp {}.py {}@{}:Desktop/judge/{}.py".format(name, user, host, number))
 
 def update():
     '''installs or updates cmd_tool on an ssh server of your choice, so that you can continue running this tool there.'''
